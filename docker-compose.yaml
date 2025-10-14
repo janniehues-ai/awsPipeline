@@ -402,22 +402,22 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
-  bot:
-    image: $REGISTRY_IP:5000/ailt/bot
-    build:
-      dockerfile: Dockerfile
-      context: dialog/bot
-    command: python -u server.py --queue-server kafka --queue-port 9092 --redis-server redis
-    networks:
-      - LTPipeline
-    environment:
-      - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
-      - DEBUG=True
-    restart: on-failure
-    depends_on:
-      - qbmediator
-    volumes:
-      - archive:/logs/archive
+# bot:
+#   image: $REGISTRY_IP:5000/ailt/bot
+#   build:
+#     dockerfile: Dockerfile
+#     context: dialog/bot
+#   command: python -u server.py --queue-server kafka --queue-port 9092 --redis-server redis
+#   networks:
+#     - LTPipeline
+#   environment:
+#     - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+#     - DEBUG=True
+#   restart: on-failure
+#   depends_on:
+#     - qbmediator
+#   volumes:
+#     - archive:/logs/archive
 
 networks:
   LTPipeline: {}
