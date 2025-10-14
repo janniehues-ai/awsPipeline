@@ -78,7 +78,7 @@ services:
     restart: 'unless-stopped'
 
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
+    image: 'bitnamilegacy/zookeeper:latest'
     #ports:
     #  - '2181:2181'
     environment:
