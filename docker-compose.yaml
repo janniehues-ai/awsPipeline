@@ -194,17 +194,17 @@ services:
     restart: on-failure
     deploy:
         replicas: 25
-  streamingtextsegmenter:
-    image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
-    build: streamingtextsegmenter
-    depends_on:
-      - qbmediator
-    environment:
-      - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
-    command: python -u StreamTextSegmenter.py --queue-server kafka --queue-port 9092 --redis-server redis
-    networks:
-      - LTPipeline
-    restart: on-failure
+# streamingtextsegmenter:
+#   image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
+#   build: streamingtextsegmenter
+#   depends_on:
+#     - qbmediator
+#   environment:
+#     - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+#   command: python -u StreamTextSegmenter.py --queue-server kafka --queue-port 9092 --redis-server redis
+#   networks:
+#     - LTPipeline
+#   restart: on-failure
 
   streamingtextstructurer:
     image: $REGISTRY_IP:5000/ailt/streamingtextstructurer
