@@ -130,7 +130,7 @@ services:
     restart: on-failure
 
   qbmediator:
-    image: $REGISTRY_IP:5000/qbmediator
+    image: $REGISTRY_IP:5000/ailt/qbmediator
     build: qbmediator
     depends_on:
       redis:
@@ -145,7 +145,7 @@ services:
     restart: on-failure
 
   streamingmt:
-    image: $REGISTRY_IP:5000/streamingmt
+    image: $REGISTRY_IP:5000/ailt/streamingmt
     build: streamingmt
     depends_on:
       - qbmediator
@@ -158,7 +158,7 @@ services:
     deploy:
         replicas: 25
   streamingtts:
-    image: $REGISTRY_IP:5000/streamingtts
+    image: $REGISTRY_IP:5000/ailt/streamingtts
     build: streamingtts
     depends_on:
       - qbmediator
@@ -171,7 +171,7 @@ services:
     deploy:
         replicas: 10
 # streaminglip:
-#   image: $REGISTRY_IP:5000/streaminglip
+#   image: $REGISTRY_IP:5000/ailt/streaminglip
 #   build: streaminglip
 #   depends_on:
 #     - qbmediator
@@ -182,7 +182,7 @@ services:
 #     - LTPipeline
 #   restart: on-failure
   streamingasr:
-    image: $REGISTRY_IP:5000/streamingasr
+    image: $REGISTRY_IP:5000/ailt/streamingasr
     build: streamingasr
     depends_on:
       - qbmediator
@@ -195,7 +195,7 @@ services:
     deploy:
         replicas: 25
   streamingtextsegmenter:
-    image: $REGISTRY_IP:5000/streamingtextsegmenter
+    image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
     build: streamingtextsegmenter
     depends_on:
       - qbmediator
@@ -207,7 +207,7 @@ services:
     restart: on-failure
 
   streamingtextstructurer:
-    image: $REGISTRY_IP:5000/streamingtextstructurer
+    image: $REGISTRY_IP:5000/ailt/streamingtextstructurer
     build:
       dockerfile: Dockerfile
       context: streamingtextstructurer
@@ -222,7 +222,7 @@ services:
     deploy:
         replicas: 10
 # streamingprep:
-#   image: $REGISTRY_IP:5000/streamingprep
+#   image: $REGISTRY_IP:5000/ailt/streamingprep
 #   build: streamingprep
 #   depends_on:
 #     - qbmediator
@@ -236,7 +236,7 @@ services:
 #   # volumes:
 #   #   - /src/cache:/home/mtasr/LT2.0/ltpipeline/streamingprep/audio
   ltapi:
-    image: $REGISTRY_IP:5000/ltapi
+    image: $REGISTRY_IP:5000/ailt/ltapi
     build: lt_api
     depends_on:
       - qbmediator
@@ -268,7 +268,7 @@ services:
       - 'traefik.http.middlewares.webapi-compat.replacepathregex.replacement=/ltapi'
     restart: on-failure
   ltapi-stream:
-    image: $REGISTRY_IP:5000/ltapi-stream
+    image: $REGISTRY_IP:5000/ailt/ltapi-stream
     build: lt_api_stream
     depends_on:
       - qbmediator
@@ -296,7 +296,7 @@ services:
     restart: on-failure
 
   log:
-    image: $REGISTRY_IP:5000/log
+    image: $REGISTRY_IP:5000/ailt/log
     build: loggingwoker
     depends_on:
       - qbmediator
@@ -311,7 +311,7 @@ services:
       - archive:/logs/archive
 
   frontend:
-    image: $REGISTRY_IP:5000/ltfrontend
+    image: $REGISTRY_IP:5000/ailt/ltfrontend
     build: ltfrontend
     depends_on:
       - traefik
@@ -340,7 +340,7 @@ services:
     restart: on-failure
 
   archive:
-    image: $REGISTRY_IP:5000/lt-archive
+    image: $REGISTRY_IP:5000/ailt/lt-archive
     build: lt-archive
     networks:
       - LTPipeline
@@ -362,7 +362,7 @@ services:
     restart: on-failure
 
   streamingsummarizer:
-    image: $REGISTRY_IP:5000/streamingsummarizer
+    image: $REGISTRY_IP:5000/ailt/streamingsummarizer
     build:
       dockerfile: Dockerfile
       context: streamingsummarizer
@@ -377,7 +377,7 @@ services:
     deploy:
         replicas: 5
   streamingpostproduction:
-    image: $REGISTRY_IP:5000/streamingpostproduction
+    image: $REGISTRY_IP:5000/ailt/streamingpostproduction
     build:
       dockerfile: Dockerfile
       context: streamingpostproduction
@@ -403,7 +403,7 @@ services:
     restart: always
 
   bot:
-    image: $REGISTRY_IP:5000/bot
+    image: $REGISTRY_IP:5000/ailt/bot
     build:
       dockerfile: Dockerfile
       context: dialog/bot
