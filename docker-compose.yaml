@@ -156,7 +156,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 25
+        replicas: 1
   streamingtts:
     image: $REGISTRY_IP:5000/ailt/streamingtts
     build: streamingtts
@@ -169,7 +169,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 10
+        replicas: 1
 # streaminglip:
 #   image: $REGISTRY_IP:5000/ailt/streaminglip
 #   build: streaminglip
@@ -193,7 +193,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 25
+        replicas: 1
 # streamingtextsegmenter:
 #   image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
 #   build: streamingtextsegmenter
@@ -220,7 +220,7 @@ services:
     depends_on:
       - qbmediator
     deploy:
-        replicas: 10
+        replicas: 1
 # streamingprep:
 #   image: $REGISTRY_IP:5000/ailt/streamingprep
 #   build: streamingprep
@@ -375,7 +375,7 @@ services:
     depends_on:
       - qbmediator
     deploy:
-        replicas: 5
+        replicas: 1
   streamingpostproduction:
     image: $REGISTRY_IP:5000/ailt/streamingpostproduction
     build:
@@ -390,7 +390,7 @@ services:
     depends_on:
       - qbmediator
     deploy:
-        replicas: 5
+        replicas: 1
 
   autoheal:
     image: willfarrell/autoheal:latest
