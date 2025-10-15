@@ -27,7 +27,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: 'EMAIL'
+      email: 'info@lecture-translator.kit.edu'
       storage: '/etc/traefik/acme/acme.json'
       httpChallenge:
         # used during the challenge
