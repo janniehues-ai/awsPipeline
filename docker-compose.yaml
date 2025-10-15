@@ -311,8 +311,7 @@ services:
       - archive:/logs/archive
 
   frontend:
-    image: $REGISTRY_IP:5000/ailt/ltfrontend
-    build: ltfrontend
+    image: $REGISTRY_IP:5000/ailt/awsfrontend
     depends_on:
       - traefik
       - ltapi
