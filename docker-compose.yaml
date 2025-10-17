@@ -18,8 +18,8 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.middlewares.basicauth.basicauth.usersFile=/basicauth.txt'
       # Traefik dashboard
-      - 'traefik.http.routers.traefik.tls=true'
-      - 'traefik.http.routers.traefik.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.traefik.tls=false'
+      - 'traefik.http.routers.traefik.tls.certresolver='
       - 'traefik.http.routers.traefik.rule=Host(`${DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))'
       - 'traefik.http.routers.traefik.service=api@internal'
       - 'traefik.http.routers.traefik.middlewares=basicauth'
@@ -42,8 +42,8 @@ services:
     labels:
       - 'pipeline=${PIPELINE_NAME:-main}'
       - 'traefik.enable=true'
-      - 'traefik.http.routers.dex.tls=true'
-      - 'traefik.http.routers.dex.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.dex.tls=false'
+      - 'traefik.http.routers.dex.tls.certresolver='
       - "traefik.http.routers.dex.rule=Host(`${DOMAIN}`) && PathPrefix(`/dex`)"
       - "traefik.http.routers.dex.entrypoints=https"
       - "traefik.http.services.dex.loadbalancer.server.port=5556"
@@ -252,15 +252,15 @@ services:
 
       - 'traefik.http.services.ltapi.loadbalancer.server.port=5000'
 
-      - 'traefik.http.routers.ltapi.tls=true'
-      - 'traefik.http.routers.ltapi.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.ltapi.rule=Host(`${DOMAIN}`) && PathPrefix(`/ltapi`)'
+      - 'traefik.http.routers.ltapi.tls=false'
+      - 'traefik.http.routers.ltapi.tls.certresolver='
+      - 'traefik.http.routers.ltapi.rule=(Host(`${DOMAIN}`) || Host(`host.docker.internal`)) && PathPrefix(`/ltapi`)'
       - 'traefik.http.routers.ltapi.service=ltapi'
       - 'traefik.http.routers.ltapi.middlewares=basicauth'
 
-      - 'traefik.http.routers.webapi.tls=true'
-      - 'traefik.http.routers.webapi.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.webapi.rule=Host(`${DOMAIN}`) && PathPrefix(`/webapi`)'
+      - 'traefik.http.routers.webapi.tls=false'
+      - 'traefik.http.routers.webapi.tls.certresolver='
+      - 'traefik.http.routers.webapi.rule=(Host(`${DOMAIN}`) || Host(`host.docker.internal`)) && PathPrefix(`/webapi`)'
       - 'traefik.http.routers.webapi.service=ltapi'
       - 'traefik.http.routers.webapi.middlewares=webapi-compat,traefik-forward-auth'
 
@@ -282,15 +282,15 @@ services:
 
       - 'traefik.http.services.ltapi-stream.loadbalancer.server.port=5000'
 
-      - 'traefik.http.routers.ltapi-stream.tls=true'
-      - 'traefik.http.routers.ltapi-stream.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.ltapi-stream.rule=Host(`${DOMAIN}`) && PathPrefix(`/ltapi/stream`)'
+      - 'traefik.http.routers.ltapi-stream.tls=false'
+      - 'traefik.http.routers.ltapi-stream.tls.certresolver='
+      - 'traefik.http.routers.ltapi-stream.rule=(Host(`${DOMAIN}`) || Host(`host.docker.internal`)) && PathPrefix(`/ltapi/stream`)'
       - 'traefik.http.routers.ltapi-stream.service=ltapi-stream'
       - 'traefik.http.routers.ltapi-stream.middlewares=basicauth'
 
-      - 'traefik.http.routers.webapi-stream.tls=true'
-      - 'traefik.http.routers.webapi-stream.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.webapi-stream.rule=Host(`${DOMAIN}`) && PathPrefix(`/webapi/stream`)'
+      - 'traefik.http.routers.webapi-stream.tls=false'
+      - 'traefik.http.routers.webapi-stream.tls.certresolver='
+      - 'traefik.http.routers.webapi-stream.rule=(Host(`${DOMAIN}`) || Host(`host.docker.internal`)) && PathPrefix(`/webapi/stream`)'
       - 'traefik.http.routers.webapi-stream.service=ltapi-stream'
       - 'traefik.http.routers.webapi-stream.middlewares=webapi-compat,traefik-forward-auth'
     restart: on-failure
@@ -330,8 +330,8 @@ services:
     labels:
       - 'pipeline=${PIPELINE_NAME:-main}'
       - 'traefik.enable=true'
-      - 'traefik.http.routers.frontend.tls=true'
-      - 'traefik.http.routers.frontend.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.frontend.tls=false'
+      - 'traefik.http.routers.frontend.tls.certresolver='
       - 'traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)'
       - 'traefik.http.services.frontend.loadbalancer.server.port=5000'
       - 'traefik.http.routers.frontend.middlewares=logout,traefik-forward-auth'
@@ -352,8 +352,8 @@ services:
     labels:
       - 'pipeline=${PIPELINE_NAME:-main}'
       - 'traefik.enable=true'
-      - 'traefik.http.routers.archive.tls=true'
-      - 'traefik.http.routers.archive.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.archive.tls=false'
+      - 'traefik.http.routers.archive.tls.certresolver='
       - 'traefik.http.routers.archive.rule=Host(`${DOMAIN}`) && PathPrefix(`/ltarchive`)'
       - 'traefik.http.services.archive.loadbalancer.server.port=5000'
       - 'traefik.http.routers.archive.middlewares=traefik-forward-auth'
