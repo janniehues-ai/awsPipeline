@@ -2,7 +2,7 @@
 #
 # This is the canonical URL that all clients MUST use to refer to dex. If a
 # path is provided, dex's HTTP service will listen at a non-root URL.
-issuer: {{ getenv "DEX_BASE_URL" }}/dex
+issuer: {{ getenv "ISSUER" }}
 
 grpc:
   addr: 0.0.0.0:5557
@@ -21,7 +21,7 @@ oauth2:
 staticClients:
 - id: traefik-forward-auth
   redirectURIs:
-  - {{ getenv "DEX_BASE_URL" }}/_oauth
+  - {{ getenv "REDIRECT" }}
   name: 'Lecture Translator'
   secret: {{ getenv "TFA_CLIENT_SECRET" }}
 

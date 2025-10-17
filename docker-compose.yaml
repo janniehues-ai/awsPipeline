@@ -31,7 +31,8 @@ services:
     env_file:
       ${DEX_FILES:-.}/dex.env
     environment:
-      DEX_BASE_URL: "https://${DOMAIN_PORT:-${DOMAIN}}"
+      ISSUER: "https://${DOMAIN}/dex"
+      REDIRECT: "http://${DOMAIN}/_oauth"
       TFA_CLIENT_SECRET: "${TFA_CLIENT_SECRET:-bar}"
     volumes:
       - ./traefik/auth/dex.yaml:/etc/dex/config.docker.yaml:ro
