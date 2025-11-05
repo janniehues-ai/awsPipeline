@@ -189,6 +189,7 @@ services:
       - qbmediator
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+      - DOMAIN=${DOMAIN}
     command: python -u StreamASR.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions 25
     networks:
       - LTPipeline
