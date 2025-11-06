@@ -5,7 +5,7 @@ echo "Starting Pipeline: ${DOMAIN}"
 docker compose pull
 
 cp env.example .env
-touch dex.env
+echo ADMIN_PASSHASH=`echo $BASICAUTHHASH | sed -r 's/^[^:]+://'` >> dex.env
 echo $BASICAUTHHASH >> traefik/auth/basicauth.txt
 
 docker compose up -d
