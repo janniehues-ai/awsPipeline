@@ -216,6 +216,8 @@ services:
       context: streamingtextstructurer
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+      - DOMAIN=${DOMAIN}
+      - BASICAUTH=${BASICAUTH}
     command: python -u StreamTextStructurer.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions 10
     networks:
       - LTPipeline
@@ -370,6 +372,8 @@ services:
       context: streamingsummarizer
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+      - DOMAIN=${DOMAIN}
+      - BASICAUTH=${BASICAUTH}
     command: python -u StreamSummarizer.py --queue-server kafka --queue-port 9092 --redis-server redis
     networks:
       - LTPipeline
@@ -385,6 +389,8 @@ services:
       context: streamingpostproduction
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+      - DOMAIN=${DOMAIN}
+      - BASICAUTH=${BASICAUTH}
     command: python -u StreamPostProduction.py --queue-server kafka --queue-port 9092 --redis-server redis
     networks:
       - LTPipeline
@@ -414,6 +420,8 @@ services:
 #     - LTPipeline
 #   environment:
 #     - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
+#     - DOMAIN=${DOMAIN}
+#     - BASICAUTH=${BASICAUTH}
 #     - DEBUG=True
 #   restart: on-failure
 #   depends_on:
