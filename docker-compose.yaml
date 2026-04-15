@@ -157,7 +157,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 25
+        replicas: 16
   streamingtts:
     image: $REGISTRY_IP:5000/ailt/streamingtts
     build: streamingtts
@@ -170,7 +170,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 10
+        replicas: 16
 # streaminglip:
 #   image: $REGISTRY_IP:5000/ailt/streaminglip
 #   build: streaminglip
@@ -196,7 +196,7 @@ services:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 25
+        replicas: 6
 # streamingtextsegmenter:
 #   image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
 #   build: streamingtextsegmenter

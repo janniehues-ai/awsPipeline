@@ -7,10 +7,10 @@ admin_client = KafkaAdminClient(bootstrap_servers=["kafka:9092"])
 
 existing_topics = admin_client.list_topics()
 
-topic_partitions = [('mt',25),
-                    ('tts',10),
+topic_partitions = [('mt',16),
+                    ('tts',16),
                     ('mediator',10),
-                    ('asr',25),
+                    ('asr',6),
                     ('bot',10),
                     ('textseg',10),
                     ('kitmeetingbutler',10),
