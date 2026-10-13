@@ -114,6 +114,10 @@ services:
 
   kafka_post_task:
     build: kafka_post_task
+    environment:
+      - MT_REPLICAS=${MT_REPLICAS:-16}
+      - TTS_REPLICAS=${TTS_REPLICAS:-16}
+      - ASR_REPLICAS=${ASR_REPLICAS:-6}
     depends_on:
       kafka:
         condition: service_healthy
@@ -152,12 +156,12 @@ services:
       - qbmediator
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
-    command: python -u StreamMT.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions 16
+    command: python -u StreamMT.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions ${MT_REPLICAS:-16}
     networks:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 16
+        replicas: ${MT_REPLICAS:-16}
   streamingtts:
     image: $REGISTRY_IP:5000/ailt/streamingtts
     build: streamingtts
@@ -165,12 +169,12 @@ services:
       - qbmediator
     environment:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
-    command: python -u StreamTTS.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions 16
+    command: python -u StreamTTS.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions ${TTS_REPLICAS:-16}
     networks:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 16
+        replicas: ${TTS_REPLICAS:-16}
 # streaminglip:
 #   image: $REGISTRY_IP:5000/ailt/streaminglip
 #   build: streaminglip
@@ -191,12 +195,12 @@ services:
       - QUEUE_SYSTEM=${QUEUE_SYSTEM:-KAFKA}
       - DOMAIN=${DOMAIN}
       - BASICAUTH=${BASICAUTH}
-    command: python -u StreamASR.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions 6
+    command: python -u StreamASR.py --queue-server kafka --queue-port 9092 --redis-server redis --partitions ${ASR_REPLICAS:-6}
     networks:
       - LTPipeline
     restart: on-failure
     deploy:
-        replicas: 6
+        replicas: ${ASR_REPLICAS:-6}
 # streamingtextsegmenter:
 #   image: $REGISTRY_IP:5000/ailt/streamingtextsegmenter
 #   build: streamingtextsegmenter

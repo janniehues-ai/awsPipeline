@@ -2,15 +2,16 @@
 from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 import sys
+import os
 
 admin_client = KafkaAdminClient(bootstrap_servers=["kafka:9092"])
 
 existing_topics = admin_client.list_topics()
 
-topic_partitions = [('mt',16),
-                    ('tts',16),
+topic_partitions = [('mt',int(os.environ.get('MT_REPLICAS',16))),
+                    ('tts',int(os.environ.get('TTS_REPLICAS',16))),
                     ('mediator',10),
-                    ('asr',6),
+                    ('asr',int(os.environ.get('ASR_REPLICAS',6))),
                     ('bot',10),
                     ('textseg',10),
                     ('kitmeetingbutler',10),

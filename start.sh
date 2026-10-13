@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Starting Pipeline: ${DOMAIN}"
+echo "Starting Pipeline: ${DOMAIN} (MT replicas: ${MT_REPLICAS:-16}, TTS replicas: ${TTS_REPLICAS:-16}, ASR replicas: ${ASR_REPLICAS:-6})"
 
 docker compose pull
 
