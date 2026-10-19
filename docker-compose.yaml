@@ -50,7 +50,10 @@ services:
       - "traefik.http.services.dex.loadbalancer.server.port=5556"
 
   traefik-forward-auth:
-    image: 'thomseddon/traefik-forward-auth:latest'
+    build:
+      context: ./traefik/auth
+      dockerfile: Dockerfile.forward-auth
+    image: $REGISTRY_IP:5000/ailt/traefik-forward-auth #traefik-forward-auth:v2.3.0
     depends_on:
       - traefik
       - dex
