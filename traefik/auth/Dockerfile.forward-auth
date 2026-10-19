@@ -1,10 +1,17 @@
-# traefik-forward-auth v2.3.0, built with a current Go toolchain.
+# traefik-forward-auth v2.3.0 (patched), built with a current Go toolchain.
 # The upstream Dockerfile at v2.3.0 still uses golang:1.20, which cannot parse
 # the "toolchain" directive in that tag's go.mod. v2.3.0 is not on Docker Hub.
 FROM golang:1.25-alpine AS builder
 RUN apk add --no-cache git ca-certificates
 RUN git clone --depth 1 --branch v2.3.0 https://github.com/thomseddon/traefik-forward-auth.git /src
 WORKDIR /src
+# Patches (see forward-auth.patch):
+# - Sliding expiry: the auth cookie of an active user is renewed, so a running
+#   live session is never logged out in the middle.
+# - Return 401 instead of setting a CSRF cookie + login redirect for fetch/XHR
+#   requests, otherwise every request adds a _forward_auth_csrf_* cookie.
+COPY forward-auth.patch /tmp/
+RUN git apply /tmp/forward-auth.patch
 RUN CGO_ENABLED=0 GOOS=linux go build -o /traefik-forward-auth ./cmd
 
 FROM scratch

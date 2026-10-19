@@ -76,6 +76,8 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181'
       - 'traefik.http.middlewares.traefik-forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User'
+      # pass the renewed auth cookie (sliding expiry) on to the browser
+      - 'traefik.http.middlewares.traefik-forward-auth.forwardauth.addAuthCookiesToResponse=_forward_auth'
       - 'traefik.http.services.traefik-forward-auth.loadbalancer.server.port=4181'
       - 'traefik.http.middlewares.logout.replacepathregex.regex=^/logout$$'
       - 'traefik.http.middlewares.logout.replacepathregex.replacement=/_oauth/logout'

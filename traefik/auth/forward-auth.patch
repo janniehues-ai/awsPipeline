@@ -1,0 +1,108 @@
+diff --git a/internal/auth.go b/internal/auth.go
+index 9b8f0b1..9276d49 100644
+--- a/internal/auth.go
++++ b/internal/auth.go
+@@ -56,6 +56,20 @@ func ValidateCookie(r *http.Request, c *http.Cookie) (string, error) {
+ 	return parts[2], nil
+ }
+ 
++// CookieExpires returns the expiry time stored in an auth cookie. The cookie
++// must have been validated with ValidateCookie before.
++func CookieExpires(c *http.Cookie) (time.Time, error) {
++	parts := strings.Split(c.Value, "|")
++	if len(parts) != 3 {
++		return time.Time{}, errors.New("Invalid cookie format")
++	}
++	expires, err := strconv.ParseInt(parts[1], 10, 64)
++	if err != nil {
++		return time.Time{}, errors.New("Unable to parse cookie expiry")
++	}
++	return time.Unix(expires, 0), nil
++}
++
+ // ValidateEmail checks if the given email address matches either a whitelisted
+ // email address, as defined by the "whitelist" config parameter. Or is part of
+ // a permitted domain, as defined by the "domains" config parameter
+diff --git a/internal/server.go b/internal/server.go
+index b8f37a0..0a78d93 100644
+--- a/internal/server.go
++++ b/internal/server.go
+@@ -3,6 +3,7 @@ package tfa
+ import (
+ 	"net/http"
+ 	"net/url"
++	"time"
+ 
+ 	"github.com/sirupsen/logrus"
+ 	"github.com/thomseddon/traefik-forward-auth/internal/provider"
+@@ -112,6 +113,14 @@ func (s *Server) AuthHandler(providerName, rule string) http.HandlerFunc {
+ 			return
+ 		}
+ 
++		// Sliding expiry: renew the cookie of an active user once half of its
++		// lifetime is used up, so a running live session (whose audio chunks
++		// pass through here) is never logged out in the middle.
++		if expires, err := CookieExpires(c); err == nil && time.Until(expires) < config.Lifetime/2 {
++			logger.WithField("email", email).Debug("Renewing auth cookie")
++			http.SetCookie(w, MakeCookie(r, email))
++		}
++
+ 		// Valid request
+ 		logger.Debug("Allowing valid request")
+ 		w.Header().Set("X-Forwarded-User", email)
+@@ -216,6 +225,16 @@ func (s *Server) LogoutHandler() http.HandlerFunc {
+ }
+ 
+ func (s *Server) authRedirect(logger *logrus.Entry, w http.ResponseWriter, r *http.Request, p provider.Provider) {
++	// Only start the login flow for top-level navigations. Background requests
++	// (fetch/XHR/EventSource, e.g. the audio chunks of a live session) cannot
++	// follow the login redirect anyway, and each of them would set a new
++	// _forward_auth_csrf_<nonce> cookie until the Cookie header is too large.
++	if mode := r.Header.Get("Sec-Fetch-Mode"); mode != "" && mode != "navigate" {
++		logger.WithField("sec_fetch_mode", mode).Debug("Not authenticated, returning 401 for non-navigation request")
++		http.Error(w, "Not authorized", 401)
++		return
++	}
++
+ 	// Error indicates no cookie, generate nonce
+ 	err, nonce := Nonce()
+ 	if err != nil {
+diff --git a/internal/server_test.go b/internal/server_test.go
+index d461a4c..41db31e 100644
+--- a/internal/server_test.go
++++ b/internal/server_test.go
+@@ -160,6 +160,34 @@ func TestServerAuthHandlerValid(t *testing.T) {
+ 	assert.Equal([]string{"test@example.com"}, users, "X-Forwarded-User header should match user")
+ }
+ 
++func TestServerAuthHandlerRenewsCookie(t *testing.T) {
++	assert := assert.New(t)
++	config = newDefaultConfig()
++	config.Domains = []string{}
++
++	// Fresh cookie should not be renewed
++	req := newHTTPRequest("GET", "http://example.com/foo")
++	res, _ := doHttpRequest(req, MakeCookie(req, "test@example.com"))
++	assert.Equal(200, res.StatusCode, "valid request should be allowed")
++	// (doHttpRequest puts the request cookie on the recorder as first cookie)
++	assert.Len(res.Cookies()[1:], 0, "fresh cookie should not be renewed")
++
++	// Cookie with less than half of its lifetime left should be renewed
++	config.Lifetime = time.Hour
++	req = newHTTPRequest("GET", "http://example.com/foo")
++	c := MakeCookie(req, "test@example.com")
++	config.Lifetime = time.Hour * 24
++	res, _ = doHttpRequest(req, c)
++	assert.Equal(200, res.StatusCode, "valid request should be allowed")
++	cookies := res.Cookies()[1:]
++	if assert.Len(cookies, 1, "old cookie should be renewed") {
++		assert.Equal(config.CookieName, cookies[0].Name)
++		assert.True(cookies[0].Expires.After(time.Now().Add(time.Hour*23)), "renewed cookie should get full lifetime")
++		_, err := ValidateCookie(req, cookies[0])
++		assert.Nil(err, "renewed cookie should be valid")
++	}
++}
++
+ func TestServerAuthCallback(t *testing.T) {
+ 	assert := assert.New(t)
+ 	require := require.New(t)
