@@ -13,3 +13,8 @@ docker compose up -d
 sleep 10
 docker compose exec redis redis-cli sadd groups:presenter admin@example.com
 
+if [ -n "$REGISTRYPASS" ]; then
+  echo $REGISTRYPASS | docker login registry.isl.iar.kit.edu -u scc-deployment --password-stdin
+  docker compose -f docker-compose.VAIS.yaml up -d
+fi
+

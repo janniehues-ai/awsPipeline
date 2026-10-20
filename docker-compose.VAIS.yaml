@@ -1,0 +1,56 @@
+
+# docker login registry.isl.iar.kit.edu -u scc-deployment
+# Password is here: /home/cmullov/docker/registry/registry/docker_auth/config/auth_config.yml
+
+version: "2.4"
+services:
+    backend-dev:
+        image: "registry.isl.iar.kit.edu/lec-recording-backend:0c876c043"
+        restart: always
+        #ports:
+        #    - "4123:4123"
+        environment:
+            - APP_PORT=4123
+            - MONGO_URI=mongodb://lecture:lecture1321A@mongodb-dev:27017/LectureTranslatorGerman?authSource=admin
+            - S3_SYNC=deny
+            - SENTRY_DSN=https://ed95a5c5330741f499b89fb79c29e230@sentry.vais.vn/21
+            - APP_URL=https://${DOMAIN}/mobile
+            - ASR_ENDPOINT=https://${BASICAUTH}@${DOMAIN}
+        networks:
+          - LTPipeline
+        labels:
+          - 'pipeline=${PIPELINE_NAME:-main}'
+          - 'traefik.enable=true'
+          - "traefik.http.routers.vaisbackend.rule=Host(`${DOMAIN}`) && PathPrefix(`/mobile`)"
+          - "traefik.http.routers.vaisbackend.entrypoints=https"
+          - "traefik.http.services.vaisbackend.loadbalancer.server.port=4123"
+
+          - 'traefik.http.routers.vaisbackend.middlewares=vais-stripprefix'
+          - "traefik.http.middlewares.vais-stripprefix.stripprefix.prefixes=/mobile"
+
+    mongodb-dev:
+        image: mongo:5.0
+        restart: unless-stopped
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=lecture
+            - MONGO_INITDB_ROOT_PASSWORD=lecture1321A
+            - MONGO_INITDB_DATABASE=mongo
+        #ports:
+        #    - '27019:27017'
+        volumes:
+            - databasedev:/data/db
+        logging:
+            driver: "json-file"
+            options:
+                tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+                max-size: "50m"
+        networks:
+          - LTPipeline
+
+networks:
+  LTPipeline:
+    external: true
+    name: repo_LTPipeline
+
+volumes:
+    databasedev: {}
